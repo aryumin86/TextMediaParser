@@ -13,6 +13,13 @@ namespace TextMediaParser.Common.Workers
     /// </summary>
     public class RulesIdentifier : IRulesIdentifier
     {
+        private RulesIdentificationSettings _rulesIdentificationSettings;
+
+        public RulesIdentifier(RulesIdentificationSettings rulesIdentificationSettings)
+        {
+            _rulesIdentificationSettings = rulesIdentificationSettings;
+        }
+
         public IEnumerable<AuthorRule> IdentifyAuthorRules(MassMedia massMedia, IEnumerable<Article> articles)
         {
             throw new NotImplementedException();
