@@ -17,18 +17,18 @@ namespace TextMediaParser.Common.ParsingRules
         /// Minimal rate of body tag with some xpath occerrence.
         /// (count of texts with some xpath containing some text) / (total articles count).
         /// </summary>
-        public double BodyTagMinOccurrenceRate { get; set; }
+        public double BodyTagMinOccurrenceRate { get; set; } = 0.1;
 
         /// <summary>
         /// This maximimum number of times the same tag with the same text can occure 
         /// in body (in different articles).
         /// </summary>
-        public int BodyTagNonUniqueTextMaxOccurrence { get; set; }
+        public int BodyTagNonUniqueTextMaxOccurrence { get; set; } = 3;
 
         /// <summary>
         /// Tag should have this minimal length.
         /// </summary>
-        public int BodyTagMinimalTextLength { get; set; }
+        public int BodyTagMinimalTextLength { get; set; } = 3;
 
         #endregion
 
