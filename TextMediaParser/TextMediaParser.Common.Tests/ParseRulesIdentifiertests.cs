@@ -3,22 +3,31 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TextMediaParser.Common.Entities;
+using TextMediaParser.Common.Helpers;
 using TextMediaParser.Common.ParsingRules;
 using TextMediaParser.Common.Workers;
 using Xunit;
 
 namespace TextMediaParser.Common.Tests
 {
-    public class ParseRulesIdentifiertests
+    public class CommonsFixture
     {
+        public readonly IHtmlHelper HtmlHelper = new HtmlHelper();
+        public readonly RulesIdentificationSettings RulesIdentificationSettings
+            = new RulesIdentificationSettings { };
+    }
+
+    public class ParseRulesIdentifiertests : IClassFixture<CommonsFixture>
+    {
+        private readonly CommonsFixture _commonsFixture;
+        public ParseRulesIdentifiertests(CommonsFixture commonsFixture)
+        {
+            _commonsFixture = commonsFixture;
+        }
+
         [Fact]
         public void RulesIdentifier_identifiesArticlesBodyRules()
         {
-            var rulesIdentificationSettings = new RulesIdentificationSettings
-            {
-
-            };
-
             var massMedia = new MassMedia
             {
                 Id = 1,
@@ -28,7 +37,8 @@ namespace TextMediaParser.Common.Tests
 
             var articles = GetArticlesFromDb(22216, 500);
 
-            var rulesIdentifier = new RulesIdentifier(rulesIdentificationSettings);
+            var rulesIdentifier = new RulesIdentifier(
+                _commonsFixture.RulesIdentificationSettings, _commonsFixture.HtmlHelper);
             var bodyRules = rulesIdentifier.IdentifyBodyRules(massMedia, articles);
             Assert.NotEmpty(bodyRules);
         }
