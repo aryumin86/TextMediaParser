@@ -8,6 +8,6 @@ namespace TextMediaParser.Common.ParsingRules
 {
     public abstract class ParsingRule
     {
-        public HashSet<string> XPaths { get; set; }
+        public string XPath { get; set; }
     }
 }

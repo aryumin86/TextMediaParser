@@ -1,3 +1,4 @@
+using HtmlAgilityPack;
 using Npgsql;
 using System;
 using System.Collections;
@@ -12,9 +13,19 @@ namespace TextMediaParser.Common.Tests
 {
     public class CommonsFixture
     {
-        public readonly IHtmlHelper HtmlHelper = new HtmlHelper();
-        public readonly RulesIdentificationSettings RulesIdentificationSettings
-            = new RulesIdentificationSettings { };
+        public readonly RulesIdentificationSettings RulesIdentificationSettings;
+        public readonly IHtmlHelper HtmlHelper;
+
+        public CommonsFixture()
+        {
+            RulesIdentificationSettings = new RulesIdentificationSettings
+            {
+                BodyTagMinimalTextLength = 3,
+                BodyTagMinOccurrenceRate = 0.05,
+                BodyTagNonUniqueTextMaxOccurrence = 15
+            };
+            HtmlHelper = new HtmlHelper(RulesIdentificationSettings);
+        }       
     }
 
     public class ParseRulesIdentifiertests : IClassFixture<CommonsFixture>
@@ -28,18 +39,11 @@ namespace TextMediaParser.Common.Tests
         [Fact]
         public void RulesIdentifier_identifiesArticlesBodyRules()
         {
-            var massMedia = new MassMedia
-            {
-                Id = 1,
-                Title = "some mass media",
-                Url = "xxx.ru"
-            };
-
             var articles = GetArticlesFromDb(22216, 500);
 
             var rulesIdentifier = new RulesIdentifier(
                 _commonsFixture.RulesIdentificationSettings, _commonsFixture.HtmlHelper);
-            var bodyRules = rulesIdentifier.IdentifyBodyRules(massMedia, articles);
+            var bodyRules = rulesIdentifier.IdentifyBodyRules(articles);
             Assert.NotEmpty(bodyRules);
         }
 

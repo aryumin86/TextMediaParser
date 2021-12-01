@@ -25,12 +25,12 @@ namespace TextMediaParser.Common.Workers
             _htmlHelper = htmlHelper;
         }
 
-        public IEnumerable<AuthorRule> IdentifyAuthorRules(MassMedia massMedia, IEnumerable<Article> articles)
+        public IEnumerable<AuthorRule> IdentifyAuthorRules(IEnumerable<Article> articles)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<BodyRule> IdentifyBodyRules(MassMedia massMedia, IEnumerable<Article> articles)
+        public IEnumerable<BodyRule> IdentifyBodyRules(IEnumerable<Article> articles)
         {
             var res = new List<BodyRule>();
 
@@ -40,12 +40,12 @@ namespace TextMediaParser.Common.Workers
             foreach (var a in articles)
             {
                 // sanitizing html of articles
-                a.Body = _htmlHelper.SanitizeHtml(a.Body);
+                a.Html = _htmlHelper.SanitizeHtml(a.Html);
 
                 var doc = new HtmlDocument();
                 try
                 {
-                    doc.LoadHtml(a.Body);
+                    doc.LoadHtml(a.Html);
                 }
                 catch(Exception)
                 {
@@ -57,7 +57,7 @@ namespace TextMediaParser.Common.Workers
                 _htmlHelper.GetDocTextNodes(doc.DocumentNode, textNodes);
 
                 // filtering text nodes
-                textNodes = textNodes.Where(n => _htmlHelper.IsTextNode(n)).ToList();                
+                // textNodes = textNodes.Where(n => _htmlHelper.IsTextNode(n)).ToList();                
 
                 foreach(var textNode in textNodes)
                 {
@@ -97,15 +97,39 @@ namespace TextMediaParser.Common.Workers
                 }
             }
 
+            // non unique text xpaths
+            var nonUniqueXpaths = new HashSet<string>(xpathsContentsInfos
+                .Where(xci => !xci.Value.UniqueTextContainer)
+                .Select(xci => xci.Key));
+
+            // excepting xpaths that are not unique
+            var minimalOccurenceOfXpthAcrossArticles =
+                articles.Count() * _rulesIdentificationSettings.BodyTagMinOccurrenceRate;
+            var rareXpaths = new HashSet<string>(xpathsContentsInfos
+                .Where(xci => xci.Value.InnerTextsHashes.Count()
+                < minimalOccurenceOfXpthAcrossArticles)
+                .Select(xci => xci.Key));
+
+            foreach (var xci in xpathsContentsInfos.Keys.Where(x => 
+                !nonUniqueXpaths.Contains(x) && !rareXpaths.Contains(x)))
+            {
+                res.Add(new BodyRule
+                {
+                    XPath = xci
+                });
+            }
+
+            // TODO get doc with majority of nodes for identified xpaths and sort them.
+            // After that sort rules according to node sorting result
             return res;
         }
 
-        public IEnumerable<CategoryRule> IdentifyCategoryRules(MassMedia massMedia, IEnumerable<Article> articles)
+        public IEnumerable<CategoryRule> IdentifyCategoryRules(IEnumerable<Article> articles)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<DateRule> IdentifyDateRules(MassMedia massMedia, IEnumerable<Article> articles)
+        public IEnumerable<DateRule> IdentifyDateRules(IEnumerable<Article> articles)
         {
             throw new NotImplementedException();
         }

@@ -38,7 +38,7 @@ namespace TextMediaParser.Common.Helpers
         /// <param name="text"></param>
         /// <param name="rulesIdentificationSettings"></param>
         /// <returns></returns>
-        public string CleanTextNode(string text, RulesIdentificationSettings rulesIdentificationSettings);
+        public string CleanTextNode(string text);
 
         /// <summary>
         /// Is is text node according to its InnerText?
@@ -46,7 +46,7 @@ namespace TextMediaParser.Common.Helpers
         /// <param name="text"></param>
         /// <param name="rulesIdentificationSettings"></param>
         /// <returns></returns>
-        public bool IsTextNode(string text, RulesIdentificationSettings rulesIdentificationSettings);
+        public bool IsTextNode(string text);
 
         /// <summary>
         /// Get all text nodes of html document.

@@ -10,9 +10,9 @@ namespace TextMediaParser.Common.Workers
 {
     public interface IRulesIdentifier
     {
-        public IEnumerable<BodyRule> IdentifyBodyRules(MassMedia massMedia, IEnumerable<Article> articles);
-        public IEnumerable<DateRule> IdentifyDateRules(MassMedia massMedia, IEnumerable<Article> articles);
-        public IEnumerable<CategoryRule> IdentifyCategoryRules(MassMedia massMedia, IEnumerable<Article> articles);
-        public IEnumerable<AuthorRule> IdentifyAuthorRules(MassMedia massMedia, IEnumerable<Article> articles);
+        public IEnumerable<BodyRule> IdentifyBodyRules(IEnumerable<Article> articles);
+        public IEnumerable<DateRule> IdentifyDateRules(IEnumerable<Article> articles);
+        public IEnumerable<CategoryRule> IdentifyCategoryRules(IEnumerable<Article> articles);
+        public IEnumerable<AuthorRule> IdentifyAuthorRules(IEnumerable<Article> articles);
     }
 }

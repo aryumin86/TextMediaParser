@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using Ganss.XSS;
+using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +11,22 @@ namespace TextMediaParser.Common.Helpers
 {
     public class HtmlHelper : IHtmlHelper
     {
+        private HtmlSanitizer _htmlSanitizer;
+        private RulesIdentificationSettings _rulesIdentificationSettings;
+
+        public HtmlHelper(RulesIdentificationSettings rulesIdentificationSettings)
+        {
+            _htmlSanitizer = new HtmlSanitizer();
+            _rulesIdentificationSettings = rulesIdentificationSettings;
+        }
+
         /// <summary>
         /// Cleans text of text node.
         /// </summary>
         /// <param name="text"></param>
         /// <param name="rulesIdentificationSettings"></param>
         /// <returns></returns>
-        public string CleanTextNode(string text, RulesIdentificationSettings rulesIdentificationSettings)
+        public string CleanTextNode(string text)
         {
             throw new NotImplementedException();
         }
@@ -24,21 +34,39 @@ namespace TextMediaParser.Common.Helpers
         /// <summary>
         /// Get all text nodes of html document.
         /// </summary>
-        /// <param name="node"></param>
+        /// <param name="currentNode"></param>
         /// <param name="result"></param>
-        public void GetDocTextNodes(HtmlNode node, IList<HtmlNode> result)
+        public void GetDocTextNodes(HtmlNode currentNode, IList<HtmlNode> result)
         {
-            throw new NotImplementedException();
+            if (IsTextNode(currentNode))
+            {
+                result.Add(currentNode);
+            }
+            else
+            {
+                foreach (var n in currentNode.ChildNodes)
+                    GetDocTextNodes(n, result);
+            }
         }
 
         /// <summary>
-        /// Does node contain only text.
+        /// Node contains only text?
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
         public bool IsTextNode(HtmlNode node)
         {
-            throw new NotImplementedException();
+            if (node.Name == "p" && node.InnerText.Replace("\n", "").Replace("\r", "").Replace(" ", "").Length
+                >= _rulesIdentificationSettings.BodyTagMinimalTextLength)
+                return true;
+            if (node.ChildNodes.Count == 1 && node.ChildNodes.First().Name == "#text")
+                return true;
+            if (node.ChildNodes.Count == 0 
+                && node.InnerText.Replace("\n","").Replace("\r","").Replace(" ", "").Length
+                >= _rulesIdentificationSettings.BodyTagMinimalTextLength)
+                return true;
+
+            return false;
         }
 
         /// <summary>
@@ -47,7 +75,7 @@ namespace TextMediaParser.Common.Helpers
         /// <param name="text"></param>
         /// <param name="rulesIdentificationSettings"></param>
         /// <returns></returns>
-        public bool IsTextNode(string text, RulesIdentificationSettings rulesIdentificationSettings)
+        public bool IsTextNode(string text)
         {
             throw new NotImplementedException();
         }
@@ -59,7 +87,7 @@ namespace TextMediaParser.Common.Helpers
         /// <returns></returns>
         public string SanitizeHtml(string html)
         {
-            throw new NotImplementedException();
+            return _htmlSanitizer.Sanitize(html);
         }
 
         /// <summary>
