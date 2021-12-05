@@ -38,6 +38,9 @@ namespace TextMediaParser.Common.Helpers
         /// <param name="result"></param>
         public void GetDocTextNodes(HtmlNode currentNode, IList<HtmlNode> result)
         {
+            if (currentNode.Name == "a")
+                return;
+
             if (IsTextNode(currentNode))
             {
                 result.Add(currentNode);
@@ -56,6 +59,12 @@ namespace TextMediaParser.Common.Helpers
         /// <returns></returns>
         public bool IsTextNode(HtmlNode node)
         {
+            if (node.Name == "a")
+                return false;
+            if(node.ChildNodes.Count <= 1 && 
+                (node.InnerText.Contains("if (") || node.InnerText.Contains("if("))){
+                return false;
+            }
             if (node.Name == "p" && node.InnerText.Replace("\n", "").Replace("\r", "").Replace(" ", "").Length
                 >= _rulesIdentificationSettings.BodyTagMinimalTextLength)
                 return true;

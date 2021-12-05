@@ -69,13 +69,14 @@ namespace TextMediaParser.Common.Workers
                     // if there is already this text hash there - increment Count property there
                     // If Count more then limit of uniqueness - mark this xpath as not artilce body part xpath
 
+
                     if (!xpathsContentsInfos.ContainsKey(textNode.XPath)){
                         xpathsContentsInfos.Add(textNode.XPath, new XPathContentsInfo
                         {
                             XPath = textNode.XPath,
                             UniqueTextContainer = true,
                             InnerTextsHashes = new HashSet<string>(),
-                            Count = 0
+                            Count = 1
                         });
                     }
 
@@ -86,13 +87,12 @@ namespace TextMediaParser.Common.Workers
                     if (!xpathsContentsInfos[textNode.XPath].InnerTextsHashes.Contains(innerTextHash))
                     {
                         xpathsContentsInfos[textNode.XPath].InnerTextsHashes.Add(innerTextHash);
-                        xpathsContentsInfos[textNode.XPath].Count = 1;
                     }
                     else
                     {
                         xpathsContentsInfos[textNode.XPath].Count++;
                         xpathsContentsInfos[textNode.XPath].UniqueTextContainer =
-                            xpathsContentsInfos[textNode.XPath].Count > _rulesIdentificationSettings.BodyTagNonUniqueTextMaxOccurrence;
+                            xpathsContentsInfos[textNode.XPath].Count < _rulesIdentificationSettings.BodyTagNonUniqueTextMaxOccurrence;
                     }
                 }
             }

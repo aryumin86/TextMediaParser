@@ -2,6 +2,7 @@
 using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TextMediaParser.Common.Entities;
 using TextMediaParser.Common.Helpers;
 using TextMediaParser.Common.ParsingRules;
@@ -20,13 +21,13 @@ namespace TextMediaParser.ConsoleTests
 
         private static void identifyAndApplyRules()
         {
-            var articles = GetArticlesFromDb(22216, 500);
+            var articles = GetArticlesFromDb(22049, 500);
 
             var RulesIdentificationSettings = new RulesIdentificationSettings
             {
                 BodyTagMinimalTextLength = 3,
-                BodyTagMinOccurrenceRate = 0.01,
-                BodyTagNonUniqueTextMaxOccurrence = 50
+                BodyTagMinOccurrenceRate = 0.1,
+                BodyTagNonUniqueTextMaxOccurrence = 10
             };
             var HtmlHelper = new HtmlHelper(RulesIdentificationSettings); ;
 
@@ -44,7 +45,7 @@ namespace TextMediaParser.ConsoleTests
                     try
                     {
                         var textAtNode = doc.DocumentNode.SelectSingleNode(rule.XPath)?.InnerText;
-                        if (textAtNode != null)
+                        if (!string.IsNullOrWhiteSpace(textAtNode))
                         {
                             Console.WriteLine(rule.XPath + ": " + textAtNode + Environment.NewLine + Environment.NewLine);
                         }
