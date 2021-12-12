@@ -21,13 +21,13 @@ namespace TextMediaParser.ConsoleTests
 
         private static void identifyAndApplyRules()
         {
-            var articles = GetArticlesFromDb(22049, 500);
+            var articles = GetArticlesFromDb(628, 250);
 
             var RulesIdentificationSettings = new RulesIdentificationSettings
             {
                 BodyTagMinimalTextLength = 3,
                 BodyTagMinOccurrenceRate = 0.1,
-                BodyTagNonUniqueTextMaxOccurrence = 10
+                BodyTagNonUniqueTextMaxOccurrence = 5
             };
             var HtmlHelper = new HtmlHelper(RulesIdentificationSettings); ;
 
