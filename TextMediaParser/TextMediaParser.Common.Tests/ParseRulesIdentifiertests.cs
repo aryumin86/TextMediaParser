@@ -15,6 +15,7 @@ namespace TextMediaParser.Common.Tests
     {
         public readonly RulesIdentificationSettings RulesIdentificationSettings;
         public readonly IHtmlHelper HtmlHelper;
+        public readonly ITextHelper TextHelper;
 
         public CommonsFixture()
         {
@@ -25,6 +26,7 @@ namespace TextMediaParser.Common.Tests
                 BodyTagNonUniqueTextMaxOccurrence = 15
             };
             HtmlHelper = new HtmlHelper(RulesIdentificationSettings);
+            TextHelper = new TextHelper(5, 25);
         }       
     }
 
@@ -43,7 +45,8 @@ namespace TextMediaParser.Common.Tests
             var articles = GetArticlesFromDb(22216, 500);
 
             var rulesIdentifier = new RulesIdentifier(
-                _commonsFixture.RulesIdentificationSettings, _commonsFixture.HtmlHelper);
+                _commonsFixture.RulesIdentificationSettings, 
+                _commonsFixture.HtmlHelper, _commonsFixture.TextHelper);
             var bodyRules = rulesIdentifier.IdentifyBodyRules(articles);
             Assert.NotEmpty(bodyRules);
         }
@@ -57,17 +60,11 @@ namespace TextMediaParser.Common.Tests
             {
                 var articles = GetArticlesFromDb(massMediaId, 250);
                 var rulesIdentifier = new RulesIdentifier(
-                _commonsFixture.RulesIdentificationSettings, _commonsFixture.HtmlHelper);
+                _commonsFixture.RulesIdentificationSettings, 
+                _commonsFixture.HtmlHelper, _commonsFixture.TextHelper);
                 var dateRules = rulesIdentifier.IdentifyDateRules(articles);
                 Assert.NotEmpty(dateRules);
             }
-        }
-
-        [Theory]
-        [InlineData("1234.11.12")]
-        public void RulesIdentifier_DifferentDateFormats_IdentifiesDates(string date)
-        {
-
         }
 
         /// <summary>

@@ -15,14 +15,14 @@ namespace TextMediaParser.ConsoleTests
     {
         static void Main(string[] args)
         {
-            int articlesCount = 500;
-            int massMediaId = 628;
+            int articlesCount = 300;
+            int massMediaId = 22504;
 
             Console.WriteLine("APP started");
             var articles = GetArticlesFromDb(massMediaId, articlesCount);
             Stopwatch sw = new Stopwatch();
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine($"Started body rules identification for {articlesCount} articles");
+            Console.WriteLine($"Started body rules identification for {articles.Count()} articles");
             sw.Start();
             var bodyRules = identifyRules(articles);
             Console.ForegroundColor = ConsoleColor.Green;
@@ -48,13 +48,13 @@ namespace TextMediaParser.ConsoleTests
                 BodyTagMinOccurrenceRate = 0.1,
                 BodyTagNonUniqueTextMaxOccurrence = 5
             };
-            var HtmlHelper = new HtmlHelper(RulesIdentificationSettings);
-            var rulesIdentifier = new RulesIdentifier(RulesIdentificationSettings, HtmlHelper);
+            var htmlHelper = new HtmlHelper(RulesIdentificationSettings);
+            var textHelper = new TextHelper(5, 25);
+            var rulesIdentifier = new RulesIdentifier(
+                RulesIdentificationSettings, htmlHelper, textHelper);
             var bodyRules = rulesIdentifier.IdentifyBodyRules(articles);
 
             return bodyRules;
-
-            
         }
 
         private static void ApplyRules(IEnumerable<Article> articles, IEnumerable<BodyRule> bodyRules)

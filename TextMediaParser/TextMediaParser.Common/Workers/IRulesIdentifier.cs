@@ -14,5 +14,6 @@ namespace TextMediaParser.Common.Workers
         public IEnumerable<DateRule> IdentifyDateRules(IEnumerable<Article> articles);
         public IEnumerable<CategoryRule> IdentifyCategoryRules(IEnumerable<Article> articles);
         public IEnumerable<AuthorRule> IdentifyAuthorRules(IEnumerable<Article> articles);
+        public DateTime? ParseDate(string date);
     }
 }

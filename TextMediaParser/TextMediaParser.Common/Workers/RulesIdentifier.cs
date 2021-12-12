@@ -17,12 +17,14 @@ namespace TextMediaParser.Common.Workers
     {
         private readonly RulesIdentificationSettings _rulesIdentificationSettings;
         private readonly IHtmlHelper _htmlHelper;
+        private readonly ITextHelper _textHelper;
 
         public RulesIdentifier(RulesIdentificationSettings rulesIdentificationSettings,
-            IHtmlHelper htmlHelper)
+            IHtmlHelper htmlHelper, ITextHelper textHelper)
         {
             _rulesIdentificationSettings = rulesIdentificationSettings;
             _htmlHelper = htmlHelper;
+            _textHelper = textHelper;
         }
 
         public IEnumerable<AuthorRule> IdentifyAuthorRules(IEnumerable<Article> articles)
@@ -135,6 +137,11 @@ namespace TextMediaParser.Common.Workers
 
 
             return res;
+        }
+
+        public DateTime? ParseDate(string date)
+        {
+            return _textHelper.ParseDate(date);
         }
 
         private string GetMd5Hash(string input)
