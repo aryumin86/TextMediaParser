@@ -131,7 +131,10 @@ namespace TextMediaParser.Common.Workers
 
         public IEnumerable<DateRule> IdentifyDateRules(IEnumerable<Article> articles)
         {
-            throw new NotImplementedException();
+            var res = new List<DateRule>();
+
+
+            return res;
         }
 
         private string GetMd5Hash(string input)

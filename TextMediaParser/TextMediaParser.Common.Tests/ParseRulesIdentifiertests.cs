@@ -37,6 +37,7 @@ namespace TextMediaParser.Common.Tests
         }
 
         [Fact]
+        [Trait("Category", "Integrational")]
         public void RulesIdentifier_identifiesArticlesBodyRules()
         {
             var articles = GetArticlesFromDb(22216, 500);
@@ -45,6 +46,28 @@ namespace TextMediaParser.Common.Tests
                 _commonsFixture.RulesIdentificationSettings, _commonsFixture.HtmlHelper);
             var bodyRules = rulesIdentifier.IdentifyBodyRules(articles);
             Assert.NotEmpty(bodyRules);
+        }
+
+        [Fact]
+        [Trait("Category", "Integrational")]
+        public void RulesIdentifier_IdentifyDateRules_GetsDates()
+        {
+            var massMediaIds = new[] { 22216, 1644 };
+            foreach(var massMediaId in massMediaIds)
+            {
+                var articles = GetArticlesFromDb(massMediaId, 250);
+                var rulesIdentifier = new RulesIdentifier(
+                _commonsFixture.RulesIdentificationSettings, _commonsFixture.HtmlHelper);
+                var dateRules = rulesIdentifier.IdentifyDateRules(articles);
+                Assert.NotEmpty(dateRules);
+            }
+        }
+
+        [Theory]
+        [InlineData("1234.11.12")]
+        public void RulesIdentifier_DifferentDateFormats_IdentifiesDates(string date)
+        {
+
         }
 
         /// <summary>
