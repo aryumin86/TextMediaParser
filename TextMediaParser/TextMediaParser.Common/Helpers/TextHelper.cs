@@ -13,10 +13,6 @@ namespace TextMediaParser.Common.Helpers
         private readonly int _minDateStrLength;
         private readonly int _maxDateStrLength;
 
-        private const string _noYearDateFormat1 = "dd.MM hh:mm";
-        private const string _noYearDateFormat2 = "dd.MM hh:mm:ss";
-        private const string _noYearDateFormat3 = "dd.MM";
-
         public TextHelper(int minDateStrLength, int maxDateStrLength)
         {
             _minDateStrLength = minDateStrLength;
@@ -30,12 +26,12 @@ namespace TextMediaParser.Common.Helpers
             if (dateStr.Length < _minDateStrLength || dateStr.Length > _maxDateStrLength)
                 return null;
 
-            if (DateTime.TryParse(dateStr, CultureInfo.GetCultureInfo("ru-RU"), DateTimeStyles.None, out DateTime tempRes))
-                return tempRes;
-
             var fixedStrParseRes = FixStrAndTryParseDate(dateStr);
             if (fixedStrParseRes.Item1 == true)
                 return fixedStrParseRes.Item2;
+
+            if (DateTime.TryParse(dateStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime tempRes))
+                return tempRes;            
 
             return null;
         }
@@ -49,15 +45,27 @@ namespace TextMediaParser.Common.Helpers
         {
             DateTime tempRes = DateTime.Now;
 
+            var rusCulture = CultureInfo.GetCultureInfo("ru-RU");
+            var rusCultureDateFormats = new[]
+            {
+                "dd MMMM HH:mm", "dd MMMM HH:mm:ss", 
+                "dd MMMM HH:mm:ss", "dd MMM HH:mm:ss"
+            };
+            var invariantCultureFormats = new[]
+            {
+                "dd M HH:mm","dd.MM.yyyy"
+            };
+
             if (string.IsNullOrWhiteSpace(rawDateString))
                 return (false, DateTime.Now);
 
             var yesterday = DateTime.Now.AddDays(-1);
 
-            rawDateString = rawDateString.Replace("|", "");
-            rawDateString = rawDateString.Replace("Сегодня в", "",
+            rawDateString = rawDateString.Replace("|", " ");
+            rawDateString = rawDateString.Replace(",", " ");
+            rawDateString = rawDateString.Replace("Сегодня в", string.Empty,
                 StringComparison.InvariantCultureIgnoreCase);
-            rawDateString = rawDateString.Replace("Сегодня", "",
+            rawDateString = rawDateString.Replace("Сегодня", string.Empty,
                 StringComparison.InvariantCultureIgnoreCase);
             rawDateString = rawDateString.Replace("Вчера в", $"{yesterday.Day}.{yesterday.Month}",
                 StringComparison.InvariantCultureIgnoreCase);
@@ -68,19 +76,25 @@ namespace TextMediaParser.Common.Helpers
             rawDateString = rawDateString.Trim(new char[] { ' ', '\n', '\t' });
             rawDateString = Regex.Replace(rawDateString, "\\s+", " ");
 
-            if (DateTime.TryParseExact(rawDateString, "dd M HH:mm", 
-                CultureInfo.InvariantCulture, 0, out tempRes))
+            foreach(var format in rusCultureDateFormats)
             {
-                return (true, tempRes);
-            }                
-            else if (DateTime.TryParse(rawDateString, out tempRes))
-                return (true, tempRes);
-            if(DateTime.TryParseExact(rawDateString, "dd.MM.yyyy", CultureInfo.InvariantCulture,  
-                DateTimeStyles.None, out tempRes))
-            {
-                return (true, tempRes);
+                if (DateTime.TryParseExact(rawDateString, format,
+                    rusCulture, DateTimeStyles.None, out tempRes))
+                {
+                    return (true, tempRes);
+                }
             }
-            else if (DateTime.TryParseExact(rawDateString, "dd.MM HH:mm",  CultureInfo.InvariantCulture, 0, out tempRes))
+
+            foreach (var format in invariantCultureFormats)
+            {
+                if (DateTime.TryParseExact(rawDateString, format,
+                    CultureInfo.InvariantCulture, DateTimeStyles.None, out tempRes))
+                {
+                    return (true, tempRes);
+                }
+            }
+
+            if (DateTime.TryParseExact(rawDateString, "dd.MM HH:mm",  CultureInfo.InvariantCulture, 0, out tempRes))
             {
                 return (true, new DateTime(DateTime.Now.Year, tempRes.Month, 
                     tempRes.Day, tempRes.Hour, tempRes.Minute, 0));
@@ -95,6 +109,9 @@ namespace TextMediaParser.Common.Helpers
                 return (true, new DateTime(DateTime.Now.Year, tempRes.Month,
                     tempRes.Day, tempRes.Hour, tempRes.Minute, tempRes.Second));
             }
+
+            else if (DateTime.TryParse(rawDateString, out tempRes))
+                return (true, tempRes);
 
             else return (false, tempRes);
         }

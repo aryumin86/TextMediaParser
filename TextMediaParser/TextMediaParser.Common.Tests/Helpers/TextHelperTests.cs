@@ -64,69 +64,67 @@ namespace TextMediaParser.Common.Tests.Helpers
     {
         public static IEnumerable<object[]> GetDateTestDatas()
         {
-            //yield return new object[]
-            //{
-            //    "12 декабря, 00:40",
-            //    new DateTime(2021, 12, 12, 00, 40, 0)
-            //};
-
-            //yield return new object[]
-            //{
-            //    "10 декабря 2021 г. | 17:46",
-            //    new DateTime(2021, 12, 10, 17, 46, 0)
-            //};
-            //yield return new object[]
-            //{
-            //    "11.12 18:46",
-            //    new DateTime(2021, 12, 11, 18, 46, 0)
-            //};
-
-            //yield return new object[]
-            //{
-            //    "12 декабря 2021, 16:37",
-            //    new DateTime(2021, 12, 12, 16, 37, 0)
-            //};
-            //yield return new object[]
-            //{
-            //    "11 декабря",
-            //    new DateTime(DateTime.Now.Year, 12, 11, 0, 0, 0)
-            //};
-            //yield return new object[]
-            //{
-            //    "10:43, 12 декабря 2021",
-            //    new DateTime(2021, 12, 12, 10, 43, 0)
-            //};
-            //yield return new object[]
-            //{
-            //    "11.12 14:56",
-            //    new DateTime(DateTime.Now.Year, 12, 11, 14, 56, 0)
-            //};
-            //yield return new object[]
-            //{
-            //    "10 декабря 2021 г. 14:12:13",
-            //    new DateTime(2021, 12, 10, 14, 12, 13)
-            //};
+            yield return new object[]
+            {
+                "12 декабря, 00:40",
+                new DateTime(2021, 12, 12, 00, 40, 0)
+            };
+            yield return new object[]
+            {
+                "10 декабря 2021 г. | 17:46",
+                new DateTime(2021, 12, 10, 17, 46, 0)
+            };
+            yield return new object[]
+            {
+                "11.12 18:46",
+                new DateTime(2021, 12, 11, 18, 46, 0)
+            };
+            yield return new object[]
+            {
+                "12 декабря 2021, 16:37",
+                new DateTime(2021, 12, 12, 16, 37, 0)
+            };
+            yield return new object[]
+            {
+                "11 декабря",
+                new DateTime(DateTime.Now.Year, 12, 11, 0, 0, 0)
+            };
+            yield return new object[]
+            {
+                "10:43, 12 декабря 2021",
+                new DateTime(2021, 12, 12, 10, 43, 0)
+            };
+            yield return new object[]
+            {
+                "11.12 14:56",
+                new DateTime(DateTime.Now.Year, 12, 11, 14, 56, 0)
+            };
+            yield return new object[]
+            {
+                "10 декабря 2021 г. 14:12:13",
+                new DateTime(2021, 12, 10, 14, 12, 13)
+            };
             yield return new object[]
             {
                 "10 декабря в 22:10",
                 new DateTime(DateTime.Now.Year, 12, 10, 22, 10, 0)
             };
-            //yield return new object[]
-            //{
-            //    "Сегодня в 18:57",
-            //    new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 18, 57, 0)
-            //};
-            //yield return new object[]
-            //{
-            //    "Вчера в 21:57",
-            //    new DateTime(DateTime.Now.AddDays(-1).Year, DateTime.Now.AddDays(-1).Month,
-            //    DateTime.Now.AddDays(-1).Day, 21, 57, 0)
-            //};
-            //yield return new object[]
-            //{
-            //    "09.12.2021",
-            //    new DateTime(2021, 12, 9, 0, 0, 0)
-            //};
+            yield return new object[]
+            {
+                "Сегодня в 18:57",
+                new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 18, 57, 0)
+            };
+            yield return new object[]
+            {
+                "Вчера в 21:57",
+                new DateTime(DateTime.Now.AddDays(-1).Year, DateTime.Now.AddDays(-1).Month,
+                DateTime.Now.AddDays(-1).Day, 21, 57, 0)
+            };
+            yield return new object[]
+            {
+                "09.12.2021",
+                new DateTime(2021, 12, 9, 0, 0, 0)
+            };
         }
 
         public IEnumerator<object[]> GetEnumerator()
