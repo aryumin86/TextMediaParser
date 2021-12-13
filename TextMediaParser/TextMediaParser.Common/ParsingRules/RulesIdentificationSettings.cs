@@ -34,6 +34,18 @@ namespace TextMediaParser.Common.ParsingRules
 
         #region date
 
+        /// <summary>
+        /// Minimal rate of date tag with some xpath occerrence.
+        /// (count of texts with some xpath containing some text with date) / (total articles count).
+        /// </summary>
+        public double DateTagMinOccurrenceRate { get; set; } = 0.5;
+
+        /// <summary>
+        /// This maximimum number of times the same tag with the same date can occure 
+        /// in body (in different articles).
+        /// </summary>
+        public int DateTagNonUniqueTextMaxOccurrence { get; set; } = 50;
+
         #endregion
 
         #region author
