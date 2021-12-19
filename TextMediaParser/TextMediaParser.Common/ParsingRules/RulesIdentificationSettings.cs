@@ -46,6 +46,16 @@ namespace TextMediaParser.Common.ParsingRules
         /// </summary>
         public int DateTagNonUniqueTextMaxOccurrence { get; set; } = 50;
 
+        /// <summary>
+        /// Min length of string potentially containing the date.
+        /// </summary>
+        public int MinDateStrLength { get; set; } = 5;
+
+        /// <summary>
+        /// Max length of string potentially containing the date.
+        /// </summary>
+        public int MaxDateStrLength { get; set; } = 40;
+
         #endregion
 
         #region author

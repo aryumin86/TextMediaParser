@@ -49,7 +49,9 @@ namespace TextMediaParser.Common.Helpers
             var rusCultureDateFormats = new[]
             {
                 "dd MMMM HH:mm", "dd MMMM HH:mm:ss", 
-                "dd MMMM HH:mm:ss", "dd MMM HH:mm:ss"
+                "dd MMMM HH:mm:ss", "dd MMM HH:mm:ss",
+                "d MMMM HH:mm", "d MMMM HH:mm:ss",
+                "d MMMM HH:mm:ss", "d MMM HH:mm:ss",
             };
             var invariantCultureFormats = new[]
             {
@@ -63,6 +65,9 @@ namespace TextMediaParser.Common.Helpers
 
             rawDateString = rawDateString.Replace("|", " ");
             rawDateString = rawDateString.Replace(",", " ");
+            rawDateString = rawDateString.Replace("г.", " ");
+            rawDateString = rawDateString.Replace(" года ", " ");
+            rawDateString = rawDateString.Replace(" год ", " ");
             rawDateString = rawDateString.Replace("Сегодня в", string.Empty,
                 StringComparison.InvariantCultureIgnoreCase);
             rawDateString = rawDateString.Replace("Сегодня", string.Empty,

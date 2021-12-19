@@ -214,16 +214,22 @@ namespace TextMediaParser.Common.Workers
                 < minimalOccurenceOfXpthAcrossArticles)
                 .Select(xci => xci.Key));
 
+            xpathsContentsInfos = xpathsContentsInfos
+                .OrderByDescending(x => x.Value.Count)
+                .ToDictionary(x => x.Key, x => x.Value);
+
+            // the higher xpath occuerence the higher the priority of this rule. 0 is the highest
+            int priority = 0; 
             foreach (var xci in xpathsContentsInfos.Keys.Where(x =>
                 !nonUniqueXpaths.Contains(x) && !rareXpaths.Contains(x)))
             {
                 res.Add(new DateRule
                 {
-                    XPath = xci
+                    XPath = xci,
+                    Priority = priority++
                 });
             }
 
-            // TODO get the highest date on the page.
             return res;
         }
 

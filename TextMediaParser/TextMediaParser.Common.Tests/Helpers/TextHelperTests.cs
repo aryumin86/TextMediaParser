@@ -19,9 +19,12 @@ namespace TextMediaParser.Common.Tests.Helpers
         {
             RulesIdentificationSettings = new RulesIdentificationSettings
             {
-                
+                MinDateStrLength = 5,
+                MaxDateStrLength = 40
             };
-            TextHelper = new TextHelper(5, 40);
+            TextHelper = new TextHelper(
+                RulesIdentificationSettings.MinDateStrLength,
+                RulesIdentificationSettings.MaxDateStrLength);
         }
     }
 
@@ -124,6 +127,11 @@ namespace TextMediaParser.Common.Tests.Helpers
             {
                 "09.12.2021",
                 new DateTime(2021, 12, 9, 0, 0, 0)
+            };
+            yield return new object[]
+            {
+                "7 мая, 22:33",
+                new DateTime(DateTime.Now.Year, 5, 7, 22, 33, 0)
             };
         }
 
