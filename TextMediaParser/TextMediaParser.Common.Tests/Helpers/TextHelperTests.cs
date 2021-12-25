@@ -133,6 +133,16 @@ namespace TextMediaParser.Common.Tests.Helpers
                 "7 мая, 22:33",
                 new DateTime(DateTime.Now.Year, 5, 7, 22, 33, 0)
             };
+            yield return new object[]
+            {
+                "25 мая 2021 — 23:30",
+                new DateTime(2021,05,25,23,30,0)
+            };
+            yield return new object[]
+            {
+                "11 июня 2021 в 18:24",
+                new DateTime(2021,6,11,18,24,0)
+            };
         }
 
         public IEnumerator<object[]> GetEnumerator()

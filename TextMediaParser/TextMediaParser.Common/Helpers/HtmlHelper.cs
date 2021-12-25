@@ -59,9 +59,11 @@ namespace TextMediaParser.Common.Helpers
         /// <returns></returns>
         public bool IsTextNode(HtmlNode node)
         {
-            if (node.Name == "a")
+            if (node.Name == "a" || node.Name == "button")
                 return false;
-            if(node.ChildNodes.Count <= 1 && 
+            if (node.Name == "#text")
+                return true;
+            if (node.ChildNodes.Count <= 1 && 
                 (node.InnerText.Contains("if (") || node.InnerText.Contains("if("))){
                 return false;
             }
@@ -69,7 +71,7 @@ namespace TextMediaParser.Common.Helpers
                 >= _rulesIdentificationSettings.BodyTagMinimalTextLength)
                 return true;
             if (node.ChildNodes.Count == 1 && node.ChildNodes.First().Name == "#text")
-                return true;
+                return true;            
             if (node.ChildNodes.Count == 0 
                 && node.InnerText.Replace("\n","").Replace("\r","").Replace(" ", "").Length
                 >= _rulesIdentificationSettings.BodyTagMinimalTextLength)

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TextMediaParser.ConsoleTests": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\aryum\\Documents\\my_projects\\some_data\\articles_parsed_data"
+    }
+  }
+}

@@ -64,8 +64,10 @@ namespace TextMediaParser.Common.Helpers
             var yesterday = DateTime.Now.AddDays(-1);
 
             rawDateString = rawDateString.Replace("|", " ");
+            rawDateString = rawDateString.Replace("—", " ");
             rawDateString = rawDateString.Replace(",", " ");
             rawDateString = rawDateString.Replace("г.", " ");
+            rawDateString = rawDateString.Replace(" в ", " ");
             rawDateString = rawDateString.Replace(" года ", " ");
             rawDateString = rawDateString.Replace(" год ", " ");
             rawDateString = rawDateString.Replace("Сегодня в", string.Empty,

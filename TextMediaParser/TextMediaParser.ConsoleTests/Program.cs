@@ -16,61 +16,105 @@ namespace TextMediaParser.ConsoleTests
     class Program
     {
         static string resDir = string.Empty;
+        static string logFullName = string.Empty;
         static void Main(string[] args)
         {
             int articlesCount = 200;
-            int massMediaId = 23903;
+            //int massMediaId = 148;
 
             resDir = args.FirstOrDefault()?.TrimEnd('\\');
             if (!string.IsNullOrWhiteSpace(resDir))
-                resDir += "\\";
-
-            Console.WriteLine("APP started");
-            var articles = GetArticlesFromDb(massMediaId, articlesCount);
-            Stopwatch sw = new Stopwatch();
-
-            var rulesIdentificationSettings = new RulesIdentificationSettings
             {
-                BodyTagMinimalTextLength = 3,
-                BodyTagMinOccurrenceRate = 0.1,
-                BodyTagNonUniqueTextMaxOccurrence = 5,
-                MinDateStrLength = 5,
-                MaxDateStrLength = 40,
-                DateTagMinOccurrenceRate = 0.3,
-                DateTagNonUniqueTextMaxOccurrence = 30
-            };
+                resDir += "\\";
+                var dir = new DirectoryInfo(resDir);
+                foreach(var f in dir.GetFiles().Where(x => !x.Name.Contains("log.txt")))
+                {
+                    f.Delete();
+                }
 
-            var textHelper = new TextHelper(
-                rulesIdentificationSettings.MinDateStrLength, rulesIdentificationSettings.MaxDateStrLength);
+                logFullName = $"{resDir}_{DateTime.Now.ToString("yyyyMMdd_HHmmss_")}log.txt";
+            }
 
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine($"Started body rules identification for {articles.Count()} articles");
-            sw.Start();
-            var bodyRules = identifyBodyRules(articles, rulesIdentificationSettings, textHelper);
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Ended body rules identification. Done within {sw.Elapsed.TotalSeconds} seconds");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("APP started");
 
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine($"Started date rules identification for {articles.Count()} articles");
-            sw.Restart();
-            var dateRules = identifyDateRules(articles, rulesIdentificationSettings, textHelper);
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Ended date rules identification. Done within {sw.Elapsed.TotalSeconds} seconds");
+            var massMedias = GetMassMediasWithEnoughHtmlForTesting(articlesCount);
+            LogInfo($"{massMedias.Count()} mass medias will be processed",
+                ConsoleColor.White, logFullName);
+            foreach (var massMedia in massMedias.OrderBy(m => m.Id))
+            {
+                LogInfo($"Started work with mass media {massMedia.Title} ({massMedia.Id})",
+                    ConsoleColor.Green, logFullName);
 
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine($"Started appying rules");
-            sw.Restart();
+                var articles = GetArticlesFromDb(massMedia.Id, articlesCount);
+                Stopwatch sw = new Stopwatch();
 
-            //exclude date rules from body rules
-            bodyRules = bodyRules.Where(bodyRule => !dateRules.Any(dateRule => bodyRule.XPath == dateRule.XPath));
+                var rulesIdentificationSettings = new RulesIdentificationSettings
+                {
+                    BodyTagMinimalTextLength = 3,
+                    BodyTagMinOccurrenceRate = 0.1,
+                    BodyTagNonUniqueTextMaxOccurrence = 5,
+                    MinDateStrLength = 5,
+                    MaxDateStrLength = 40,
+                    DateTagMinOccurrenceRate = 0.3,
+                    DateTagNonUniqueTextMaxOccurrence = 30
+                };
 
-            ApplyRules(articles, bodyRules, dateRules, textHelper);
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Ended applying rules. Done within {sw.Elapsed.TotalSeconds} seconds");
+                var textHelper = new TextHelper(
+                    rulesIdentificationSettings.MinDateStrLength, rulesIdentificationSettings.MaxDateStrLength);
 
-            Console.ForegroundColor = ConsoleColor.Blue;
+                LogInfo($"Started body rules identification for {massMedia.Title} ({massMedia.Id}) for {articles.Count()} articles",
+                    ConsoleColor.Blue, logFullName);
+                sw.Start();
+                var bodyRules = identifyBodyRules(articles, rulesIdentificationSettings, textHelper);
+                LogInfo($"Ended body rules identification for {massMedia.Title} ({massMedia.Id}). Done within {sw.Elapsed.TotalSeconds} seconds. Found {bodyRules.Count()} body rules",
+                    ConsoleColor.Green, logFullName);
+
+                LogInfo($"Started date rules identification for {massMedia.Title} ({massMedia.Id}) for {articles.Count()} articles.",
+                    ConsoleColor.Blue, logFullName);
+
+                sw.Restart();
+                var dateRules = identifyDateRules(articles, rulesIdentificationSettings, textHelper);
+                LogInfo($"Ended date rules identification for {massMedia.Title} ({massMedia.Id}). Done within {sw.Elapsed.TotalSeconds} seconds. Found {dateRules.Count()} date rules",
+                    ConsoleColor.Green, logFullName);
+
+                LogInfo($"Started appying rules",
+                    ConsoleColor.Blue, logFullName);
+
+                sw.Restart();
+
+                //exclude date rules from body rules
+                bodyRules = bodyRules.Where(bodyRule => !dateRules.Any(dateRule => bodyRule.XPath == dateRule.XPath));
+
+                ApplyRules(articles, bodyRules, dateRules, textHelper, massMedia);
+                LogInfo($"Ended applying rules for {massMedia.Title} ({massMedia.Id}). Done within {sw.Elapsed.TotalSeconds} seconds",
+                    ConsoleColor.Green, logFullName);
+
+                if (!bodyRules.Any())
+                {
+                    LogInfo($"!!! No body rules found for massMedia {massMedia.Title} ({massMedia.Id})",
+                        ConsoleColor.Red, logFullName);
+                }
+                if (!dateRules.Any())
+                {
+                    LogInfo($"!!! No date rules found for massMedia {massMedia.Title} ({massMedia.Id})",
+                        ConsoleColor.Red, logFullName);
+                }
+            }
+            
             Console.WriteLine("Done");
             Console.ReadLine();
+        }
+
+        private static void LogInfo(string text, ConsoleColor foregroundColor, string fileFull)
+        {
+            var time = DateTime.Now;
+            string log = $"{time}: {text}";
+            Console.ForegroundColor = foregroundColor;
+            Console.WriteLine(log);
+            if (!string.IsNullOrEmpty(fileFull)){
+                File.AppendAllText(fileFull, Environment.NewLine + log, Encoding.UTF8);
+            }
         }
 
         private static IEnumerable<BodyRule> identifyBodyRules(IEnumerable<Article> articles, 
@@ -97,15 +141,17 @@ namespace TextMediaParser.ConsoleTests
         }
 
         private static void ApplyRules(IEnumerable<Article> articles, IEnumerable<BodyRule> bodyRules, 
-            IEnumerable<DateRule> dateRules, ITextHelper textHelper)
+            IEnumerable<DateRule> dateRules, ITextHelper textHelper, MassMedia massMedia)
         {
             var sb = new StringBuilder();
+            bool anyOfBodyRulesWasUsed = false;
+            bool anyOfDateRulesWasUsed = false;
 
             foreach (var a in articles)
             {
                 var doc = new HtmlDocument();
                 doc.LoadHtml(a.Html);
-                Console.WriteLine($"--------- LINK: {a.Url}");
+                //Console.WriteLine($"--------- LINK: {a.Url}");
                 sb.AppendLine($"--------- LINK: {a.Url}");
                 foreach (var rule in bodyRules)
                 {
@@ -116,6 +162,7 @@ namespace TextMediaParser.ConsoleTests
                         {
                             //Console.WriteLine(rule.XPath + ": " + textAtNode + Environment.NewLine + Environment.NewLine);
                             sb.AppendLine($"{textAtNode} {Environment.NewLine}");
+                            anyOfBodyRulesWasUsed = true;
                         }
                     }
                     catch (Exception)
@@ -130,8 +177,10 @@ namespace TextMediaParser.ConsoleTests
                         var textAtNode = doc.DocumentNode.SelectSingleNode(rule.XPath)?.InnerText;
                         if (!string.IsNullOrWhiteSpace(textAtNode) && textHelper.ParseDate(textAtNode).HasValue)
                         {
+                            var date = textHelper.ParseDate(textAtNode);
                             //Console.WriteLine(rule.XPath + ": " + textAtNode + Environment.NewLine + Environment.NewLine);
-                            sb.AppendLine($"{textAtNode} {Environment.NewLine}{Environment.NewLine}");
+                            sb.AppendLine($"{date} {Environment.NewLine}{Environment.NewLine}");
+                            anyOfDateRulesWasUsed = true;
                             break;
                         }
                     }
@@ -142,8 +191,13 @@ namespace TextMediaParser.ConsoleTests
                 }                
             }
 
-            if(!string.IsNullOrWhiteSpace(resDir))
-                File.WriteAllText(@$"{resDir}\res.txt", sb.ToString(), Encoding.UTF8);
+            if (!anyOfBodyRulesWasUsed)
+                LogInfo($"!!! No found body rule was successfully applied to articles of {massMedia.Title} ({massMedia.Id})", ConsoleColor.Red, logFullName);
+            if (!anyOfDateRulesWasUsed)
+                LogInfo($"!!! No found date rule was successfully applied to articles of {massMedia.Title} ({massMedia.Id})", ConsoleColor.Red, logFullName);
+
+            if (!string.IsNullOrWhiteSpace(resDir))
+                File.WriteAllText(@$"{resDir}\{massMedia.Id}.txt", sb.ToString(), Encoding.UTF8);
         }
 
         /// <summary>
@@ -180,6 +234,38 @@ limit @count;";
             }
 
             return res;
+        }
+
+        private static IEnumerable<MassMedia> GetMassMediasWithEnoughHtmlForTesting(int minArticlesCount)
+        {
+            List<MassMedia> massMediasWithEnoughHtmlData = new List<MassMedia>();
+            var query = @"
+select a.""MassMediaId"", count(*), max(m.""Title"") as Title
+from public.""Articles"" as a
+join public.""MassMedias"" as m on m.""Id"" = a.""MassMediaId""
+where a.""Html"" is not null
+group by a.""MassMediaId""
+having count(*) >= @minArticlesCount
+order by count(*) desc;
+";
+
+            using var conn = new NpgsqlConnection("Host=127.0.0.1;Database=MassMediaRunnerDb;Uid=postgres;Password=postgres;Port=5432;");
+            using var cmd = new NpgsqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@minArticlesCount", minArticlesCount);
+            conn.Open();
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                var mm = new MassMedia
+                {
+                    Id = (int)reader["MassMediaId"],
+                    Title = (string)reader["Title"]
+                };
+
+                massMediasWithEnoughHtmlData.Add(mm);
+            }
+
+            return massMediasWithEnoughHtmlData;
         }
     }
 }
