@@ -15,10 +15,15 @@ namespace TextMediaParser.ConsoleTests
 {
     class Program
     {
+        static string resDir = string.Empty;
         static void Main(string[] args)
         {
             int articlesCount = 200;
             int massMediaId = 23903;
+
+            resDir = args.FirstOrDefault()?.TrimEnd('\\');
+            if (!string.IsNullOrWhiteSpace(resDir))
+                resDir += "\\";
 
             Console.WriteLine("APP started");
             var articles = GetArticlesFromDb(massMediaId, articlesCount);
@@ -137,7 +142,8 @@ namespace TextMediaParser.ConsoleTests
                 }                
             }
 
-            File.WriteAllText(@$"F:\my_projects\dotnet\TheTests\extracted_data\res.txt", sb.ToString(), Encoding.UTF8);
+            if(!string.IsNullOrWhiteSpace(resDir))
+                File.WriteAllText(@$"{resDir}\res.txt", sb.ToString(), Encoding.UTF8);
         }
 
         /// <summary>
