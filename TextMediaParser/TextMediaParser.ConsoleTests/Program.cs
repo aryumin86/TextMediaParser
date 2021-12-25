@@ -3,7 +3,9 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
 using TextMediaParser.Common.Entities;
 using TextMediaParser.Common.Helpers;
 using TextMediaParser.Common.ParsingRules;
@@ -16,7 +18,7 @@ namespace TextMediaParser.ConsoleTests
         static void Main(string[] args)
         {
             int articlesCount = 200;
-            int massMediaId = 36;
+            int massMediaId = 23903;
 
             Console.WriteLine("APP started");
             var articles = GetArticlesFromDb(massMediaId, articlesCount);
@@ -92,11 +94,14 @@ namespace TextMediaParser.ConsoleTests
         private static void ApplyRules(IEnumerable<Article> articles, IEnumerable<BodyRule> bodyRules, 
             IEnumerable<DateRule> dateRules, ITextHelper textHelper)
         {
+            var sb = new StringBuilder();
+
             foreach (var a in articles)
             {
                 var doc = new HtmlDocument();
                 doc.LoadHtml(a.Html);
                 Console.WriteLine($"--------- LINK: {a.Url}");
+                sb.AppendLine($"--------- LINK: {a.Url}");
                 foreach (var rule in bodyRules)
                 {
                     try
@@ -105,6 +110,7 @@ namespace TextMediaParser.ConsoleTests
                         if (!string.IsNullOrWhiteSpace(textAtNode))
                         {
                             //Console.WriteLine(rule.XPath + ": " + textAtNode + Environment.NewLine + Environment.NewLine);
+                            sb.AppendLine($"{textAtNode} {Environment.NewLine}");
                         }
                     }
                     catch (Exception)
@@ -119,7 +125,8 @@ namespace TextMediaParser.ConsoleTests
                         var textAtNode = doc.DocumentNode.SelectSingleNode(rule.XPath)?.InnerText;
                         if (!string.IsNullOrWhiteSpace(textAtNode) && textHelper.ParseDate(textAtNode).HasValue)
                         {
-                            Console.WriteLine(rule.XPath + ": " + textAtNode + Environment.NewLine + Environment.NewLine);
+                            //Console.WriteLine(rule.XPath + ": " + textAtNode + Environment.NewLine + Environment.NewLine);
+                            sb.AppendLine($"{textAtNode} {Environment.NewLine}{Environment.NewLine}");
                             break;
                         }
                     }
@@ -127,8 +134,10 @@ namespace TextMediaParser.ConsoleTests
                     {
 
                     }
-                }
+                }                
             }
+
+            File.WriteAllText(@$"F:\my_projects\dotnet\TheTests\extracted_data\res.txt", sb.ToString(), Encoding.UTF8);
         }
 
         /// <summary>
