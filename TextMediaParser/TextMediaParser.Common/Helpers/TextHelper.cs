@@ -122,5 +122,29 @@ namespace TextMediaParser.Common.Helpers
 
             else return (false, tempRes);
         }
+
+
+        /// <summary>
+        /// Tries get date from string with other words e.g.
+        /// 09 мая в 00:30 | Обновлено 09 мая в 00:30 (https://riamo.ru/)
+        /// or Опубликовано: 12.04.2021 в 15:20 в рубрике  - (http://t7-inform.ru/)
+        /// </summary>
+        /// <param name="rawString"></param>
+        /// <returns></returns>
+        public string TryGetDateStringFromDateMixedWithOtherWords(string rawString)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Tries to get date from url. E.g.
+        /// https://www.rosbalt.ru/russia/2021/05/10/1900763.html
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public DateTime? TryGetDateFromUrl(string url)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
