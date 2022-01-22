@@ -5,8 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TextMediaParser.DesktopTests"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" Height="650" Width="1200">
+    <DockPanel>
+        <ToolBar DockPanel.Dock="Top">
+            <Button Background="Aqua">кнопка 1</Button>
+            <Button Background="DarkOrange">кнопка 2</Button>
+            <CheckBox Margin="10px">Опция 1</CheckBox>
+        </ToolBar>
 
-    </Grid>
+        <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Button>AAA</Button>
+        </Grid>
+    </DockPanel>
 </Window>
