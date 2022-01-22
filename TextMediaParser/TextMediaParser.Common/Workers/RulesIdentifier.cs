@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,9 +38,15 @@ namespace TextMediaParser.Common.Workers
             var res = new List<BodyRule>();
 
             // key is xpath
-            var xpathsContentsInfos = new Dictionary<string, XPathContentsInfo>();
+            var xpathsContentsInfos = new ConcurrentDictionary<string, XPathContentsInfo>();
 
-            foreach (var a in articles)
+            var parallelOptions = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount
+            };
+
+            //foreach (var a in articles)
+            Parallel.ForEach(articles, parallelOptions, a =>
             {
                 // sanitizing html of articles
                 a.Html = _htmlHelper.SanitizeHtml(a.Html);
@@ -49,16 +56,16 @@ namespace TextMediaParser.Common.Workers
                 {
                     doc.LoadHtml(a.Html);
                 }
-                catch(Exception)
+                catch (Exception)
                 {
-                    continue;
+                    return;
                 }
 
                 // getting all text nodes from article html
                 var textNodes = new List<HtmlNode>();
-                _htmlHelper.GetDocTextNodes(doc.DocumentNode, textNodes);              
+                _htmlHelper.GetDocTextNodes(doc.DocumentNode, textNodes);
 
-                foreach(var textNode in textNodes)
+                foreach (var textNode in textNodes)
                 {
                     // getting md5 hash of text at node
                     var innerTextHash = GetMd5Hash(textNode.InnerText);
@@ -69,14 +76,18 @@ namespace TextMediaParser.Common.Workers
                     // If Count more then limit of uniqueness - mark this xpath as not artilce body part xpath
 
 
-                    if (!xpathsContentsInfos.ContainsKey(textNode.XPath)){
-                        xpathsContentsInfos.Add(textNode.XPath, new XPathContentsInfo
+                    while (!xpathsContentsInfos.ContainsKey(textNode.XPath))
+                    {
+                        var added = xpathsContentsInfos.TryAdd(textNode.XPath, new XPathContentsInfo
                         {
                             XPath = textNode.XPath,
                             UniqueTextContainer = true,
                             InnerTextsHashes = new HashSet<string>(),
                             Count = 1
                         });
+
+                        if (added)
+                            break;
                     }
 
                     // we already know that this text node is not unique
@@ -94,7 +105,7 @@ namespace TextMediaParser.Common.Workers
                             xpathsContentsInfos[textNode.XPath].Count < _rulesIdentificationSettings.BodyTagNonUniqueTextMaxOccurrence;
                     }
                 }
-            }
+            });
 
             // non unique text xpaths
             var nonUniqueXpaths = new HashSet<string>(xpathsContentsInfos
@@ -133,9 +144,14 @@ namespace TextMediaParser.Common.Workers
             var res = new List<DateRule>();
 
             // key is xpath
-            var xpathsContentsInfos = new Dictionary<string, XPathContentsInfo>();
+            var xpathsContentsInfos = new ConcurrentDictionary<string, XPathContentsInfo>();
 
-            foreach (var a in articles)
+            var parallelOptions = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount
+            };
+
+            Parallel.ForEach(articles, parallelOptions, a =>
             {
                 // sanitizing html of articles
                 a.Html = _htmlHelper.SanitizeHtml(a.Html);
@@ -147,12 +163,12 @@ namespace TextMediaParser.Common.Workers
                 }
                 catch (Exception)
                 {
-                    continue;
+                    return;
                 }
 
                 // getting all text nodes from article html
                 var textNodes = new List<HtmlNode>();
-                _htmlHelper.GetDocTextNodes(doc.DocumentNode, textNodes);              
+                _htmlHelper.GetDocTextNodes(doc.DocumentNode, textNodes);
 
                 foreach (var textNode in textNodes)
                 {
@@ -173,15 +189,18 @@ namespace TextMediaParser.Common.Workers
                     // If Count more then limit of uniqueness - mark this xpath as not artilce body part xpath
 
 
-                    if (!xpathsContentsInfos.ContainsKey(textNode.XPath))
+                    while (!xpathsContentsInfos.ContainsKey(textNode.XPath))
                     {
-                        xpathsContentsInfos.Add(textNode.XPath, new XPathContentsInfo
+                        var added = xpathsContentsInfos.TryAdd(textNode.XPath, new XPathContentsInfo
                         {
                             XPath = textNode.XPath,
                             UniqueTextContainer = true,
                             InnerTextsHashes = new HashSet<string>(),
                             Count = 1
                         });
+
+                        if (added)
+                            break;
                     }
 
                     // we already know that this text node is not unique
@@ -199,7 +218,7 @@ namespace TextMediaParser.Common.Workers
                             xpathsContentsInfos[textNode.XPath].Count < _rulesIdentificationSettings.DateTagNonUniqueTextMaxOccurrence;
                     }
                 }
-            }
+            });
 
             // non unique text xpaths
             var nonUniqueXpaths = new HashSet<string>(xpathsContentsInfos
@@ -214,13 +233,13 @@ namespace TextMediaParser.Common.Workers
                 < minimalOccurenceOfXpthAcrossArticles)
                 .Select(xci => xci.Key));
 
-            xpathsContentsInfos = xpathsContentsInfos
+            var notConcurrentXpathsContentsInfos = xpathsContentsInfos
                 .OrderByDescending(x => x.Value.Count)
                 .ToDictionary(x => x.Key, x => x.Value);
 
             // the higher xpath occuerence the higher the priority of this rule. 0 is the highest
             int priority = 0; 
-            foreach (var xci in xpathsContentsInfos.Keys.Where(x =>
+            foreach (var xci in notConcurrentXpathsContentsInfos.Keys.Where(x =>
                 !nonUniqueXpaths.Contains(x) && !rareXpaths.Contains(x)))
             {
                 res.Add(new DateRule
