@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>aryumin.TextMediaParser</id>
+    <version>1.0.0</version>
+    <title>TextMediaParser</title>
+    <authors>Alexey Ryumin</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <!-- <icon>icon.png</icon> -->
+    <projectUrl>http://project_url_here_or_delete_this_line/</projectUrl>
+    <description>Identifies texts at articles html-s</description>
+    <releaseNotes>First version...</releaseNotes>
+    <copyright>$copyright$</copyright>
+    <tags>parser text</tags>
+  </metadata>
+</package>
