@@ -56,6 +56,8 @@ namespace TextMediaParser.Common.ParsingRules
         /// </summary>
         public int MaxDateStrLength { get; set; } = 40;
 
+        public int RulesIdentificationParallelism { get; set; } = 1;
+
         #endregion
 
         #region author

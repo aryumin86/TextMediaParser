@@ -42,7 +42,7 @@ namespace TextMediaParser.Common.Workers
 
             var parallelOptions = new ParallelOptions
             {
-                MaxDegreeOfParallelism = Environment.ProcessorCount
+                MaxDegreeOfParallelism = _rulesIdentificationSettings.RulesIdentificationParallelism
             };
 
             //foreach (var a in articles)
@@ -148,7 +148,7 @@ namespace TextMediaParser.Common.Workers
 
             var parallelOptions = new ParallelOptions
             {
-                MaxDegreeOfParallelism = Environment.ProcessorCount
+                MaxDegreeOfParallelism = _rulesIdentificationSettings.RulesIdentificationParallelism
             };
 
             Parallel.ForEach(articles, parallelOptions, a =>
