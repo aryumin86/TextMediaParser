@@ -94,7 +94,8 @@ limit @count;";
                 {
                     Id = (int)reader["Id"],
                     Html = (string)reader["Html"],
-                    Url = (string)reader["Url"]
+                    Url = (string)reader["Url"],
+                    HtmlCollectionDate = DateTime.Now
                 };
 
                 res.Add(a);
