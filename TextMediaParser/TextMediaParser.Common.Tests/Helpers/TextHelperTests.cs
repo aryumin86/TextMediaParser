@@ -43,7 +43,7 @@ namespace TextMediaParser.Common.Tests.Helpers
         [InlineData("Thu, 01 May 2008 07:34:42 GMT")]
         public void ParseDate_BasicFormats_ParseSuccess(string dateStr)
         {
-            var date = _commonTextHelperFixture.TextHelper.ParseDate(dateStr);
+            var date = _commonTextHelperFixture.TextHelper.ParseDate(dateStr, DateTime.Now);
             Assert.True(date.HasValue);
         }
 
@@ -52,7 +52,7 @@ namespace TextMediaParser.Common.Tests.Helpers
         [MemberData(nameof(DateParsingTestDatagenerator.GetDateTestDatas), MemberType = typeof(DateParsingTestDatagenerator))]
         public void ParseDate_MassMediasFormats_ParseSuccess(string dateStr, DateTime expectedDate)
         {
-            var parsedDate = _commonTextHelperFixture.TextHelper.ParseDate(dateStr);
+            var parsedDate = _commonTextHelperFixture.TextHelper.ParseDate(dateStr, DateTime.Now);
 
             Assert.True(parsedDate.HasValue);
             Assert.True(parsedDate.Value.Year == expectedDate.Year);

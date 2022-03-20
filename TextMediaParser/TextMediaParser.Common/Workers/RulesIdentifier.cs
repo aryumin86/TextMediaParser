@@ -38,15 +38,12 @@ namespace TextMediaParser.Common.Workers
             var res = new List<BodyRule>();
 
             // key is xpath
-            var xpathsContentsInfos = new ConcurrentDictionary<string, XPathContentsInfo>();
+            var xpathsContentsInfos = new Dictionary<string, XPathContentsInfo>();
 
-            var parallelOptions = new ParallelOptions
-            {
-                MaxDegreeOfParallelism = _rulesIdentificationSettings.RulesIdentificationParallelism
-            };
+            int maxXPathOrderNumber = 0;
 
             //foreach (var a in articles)
-            Parallel.ForEach(articles, parallelOptions, a =>
+            foreach(var a in articles)
             {
                 // sanitizing html of articles
                 a.Html = _htmlHelper.SanitizeHtml(a.Html);
@@ -58,7 +55,7 @@ namespace TextMediaParser.Common.Workers
                 }
                 catch (Exception)
                 {
-                    return;
+                    continue;
                 }
 
                 // getting all text nodes from article html
@@ -78,16 +75,14 @@ namespace TextMediaParser.Common.Workers
 
                     while (!xpathsContentsInfos.ContainsKey(textNode.XPath))
                     {
-                        var added = xpathsContentsInfos.TryAdd(textNode.XPath, new XPathContentsInfo
+                        xpathsContentsInfos.Add(textNode.XPath, new XPathContentsInfo
                         {
                             XPath = textNode.XPath,
                             UniqueTextContainer = true,
                             InnerTextsHashes = new HashSet<string>(),
-                            Count = 1
+                            Count = 1,
+                            OrderAtHtmlPage = maxXPathOrderNumber++
                         });
-
-                        if (added)
-                            break;
                     }
 
                     // we already know that this text node is not unique
@@ -105,7 +100,7 @@ namespace TextMediaParser.Common.Workers
                             xpathsContentsInfos[textNode.XPath].Count < _rulesIdentificationSettings.BodyTagNonUniqueTextMaxOccurrence;
                     }
                 }
-            });
+            }
 
             // non unique text xpaths
             var nonUniqueXpaths = new HashSet<string>(xpathsContentsInfos
@@ -120,18 +115,21 @@ namespace TextMediaParser.Common.Workers
                 < minimalOccurenceOfXpthAcrossArticles)
                 .Select(xci => xci.Key));
 
-            foreach (var xci in xpathsContentsInfos.Keys.Where(x => 
-                !nonUniqueXpaths.Contains(x) && !rareXpaths.Contains(x)))
+            foreach (var xci in xpathsContentsInfos.Where(x => 
+                !nonUniqueXpaths.Contains(x.Key) && !rareXpaths.Contains(x.Key)))
             {
                 res.Add(new BodyRule
                 {
-                    XPath = xci
+                    XPath = xci.Key,
+                    OrderAtHtmlPage = xci.Value.OrderAtHtmlPage
                 });
             }
 
-            // TODO get doc with majority of nodes for identified xpaths and sort them.
-            // After that sort rules according to node sorting result
-            return res;
+            // ordering rules numbers pretty fix
+            int ruleOrderNumber = 0;
+            return res
+                .OrderBy(r => r.OrderAtHtmlPage)
+                .Select(r => new BodyRule { XPath = r.XPath, OrderAtHtmlPage = ruleOrderNumber++ });
         }
 
         public IEnumerable<CategoryRule> IdentifyCategoryRules(IEnumerable<Article> articles)
@@ -175,7 +173,7 @@ namespace TextMediaParser.Common.Workers
                     // getting md5 hash of text at node
                     var innerTextHash = GetMd5Hash(textNode.InnerText);
 
-                    var mayBeDate = _textHelper.ParseDate(textNode.InnerText);
+                    var mayBeDate = _textHelper.ParseDate(textNode.InnerText, a.HtmlCollectionDate);
                     if (mayBeDate == null)
                         continue;
                     else

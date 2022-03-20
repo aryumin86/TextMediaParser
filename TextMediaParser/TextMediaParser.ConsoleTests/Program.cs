@@ -52,7 +52,7 @@ namespace TextMediaParser.ConsoleTests
                 var rulesIdentificationSettings = new RulesIdentificationSettings
                 {
                     BodyTagMinimalTextLength = 3,
-                    BodyTagMinOccurrenceRate = 0.1,
+                    BodyTagMinOccurrenceRate = 0.05,
                     BodyTagNonUniqueTextMaxOccurrence = 5,
                     MinDateStrLength = 5,
                     MaxDateStrLength = 40,
@@ -175,9 +175,9 @@ namespace TextMediaParser.ConsoleTests
                     try
                     {
                         var textAtNode = doc.DocumentNode.SelectSingleNode(rule.XPath)?.InnerText;
-                        if (!string.IsNullOrWhiteSpace(textAtNode) && textHelper.ParseDate(textAtNode).HasValue)
+                        if (!string.IsNullOrWhiteSpace(textAtNode) && textHelper.ParseDate(textAtNode, a.HtmlCollectionDate).HasValue)
                         {
-                            var date = textHelper.ParseDate(textAtNode);
+                            var date = textHelper.ParseDate(textAtNode, a.HtmlCollectionDate);
                             //Console.WriteLine(rule.XPath + ": " + textAtNode + Environment.NewLine + Environment.NewLine);
                             sb.AppendLine($"{date} {Environment.NewLine}{Environment.NewLine}");
                             anyOfDateRulesWasUsed = true;
@@ -227,7 +227,8 @@ limit @count;";
                 {
                     Id = (int)reader["Id"],
                     Html = (string)reader["Html"],
-                    Url = (string)reader["Url"]
+                    Url = (string)reader["Url"],
+                    HtmlCollectionDate = DateTime.Now
                 };
 
                 res.Add(a);

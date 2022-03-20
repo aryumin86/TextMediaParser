@@ -15,5 +15,6 @@ namespace TextMediaParser.Common.Entities
         public bool UniqueTextContainer { get; set; }
         public HashSet<string> InnerTextsHashes { get; set; }
         public int Count { get; set; } = 0;
+        public int OrderAtHtmlPage { get; set; }
     }
 }

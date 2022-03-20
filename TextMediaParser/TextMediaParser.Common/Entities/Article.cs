@@ -27,5 +27,7 @@ namespace TextMediaParser.Common.Entities
         /// Date of article publication.
         /// </summary>
         public DateTime? PubDate { get; set; }
+
+        public DateTime HtmlCollectionDate { get; set; }
     }
 }

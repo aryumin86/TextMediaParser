@@ -16,7 +16,7 @@ namespace TextMediaParser.Common.Helpers
         /// </summary>
         /// <param name="dateStr"></param>
         /// <returns></returns>
-        public DateTime? ParseDate(string dateStr);
+        public DateTime? ParseDate(string dateStr, DateTime htmlCollectionDate);
 
         /// <summary>
         /// Tries get date from string with other words e.g.

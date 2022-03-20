@@ -19,14 +19,14 @@ namespace TextMediaParser.Common.Helpers
             _maxDateStrLength = maxDateStrLength;
         }
 
-        public DateTime? ParseDate(string dateStr)
+        public DateTime? ParseDate(string dateStr, DateTime htmlCollectionDate)
         {
             if (string.IsNullOrWhiteSpace(dateStr))
                 return null;
             if (dateStr.Length < _minDateStrLength || dateStr.Length > _maxDateStrLength)
                 return null;
 
-            var fixedStrParseRes = FixStrAndTryParseDate(dateStr);
+            var fixedStrParseRes = FixStrAndTryParseDate(dateStr, htmlCollectionDate);
             if (fixedStrParseRes.Item1 == true)
                 return fixedStrParseRes.Item2;
 
@@ -41,9 +41,9 @@ namespace TextMediaParser.Common.Helpers
         /// </summary>
         /// <param name="rawDateString"></param>
         /// <returns>tuple with success mark and parsed date</returns>
-        public (bool, DateTime) FixStrAndTryParseDate(string rawDateString)
+        public (bool, DateTime) FixStrAndTryParseDate(string rawDateString, DateTime htmlCollectionDate)
         {
-            DateTime tempRes = DateTime.Now;
+            DateTime tempRes = htmlCollectionDate;
 
             var rusCulture = CultureInfo.GetCultureInfo("ru-RU");
             var rusCultureDateFormats = new[]
@@ -59,9 +59,9 @@ namespace TextMediaParser.Common.Helpers
             };
 
             if (string.IsNullOrWhiteSpace(rawDateString))
-                return (false, DateTime.Now);
+                return (false, htmlCollectionDate);
 
-            var yesterday = DateTime.Now.AddDays(-1);
+            var yesterday = htmlCollectionDate.AddDays(-1);
 
             rawDateString = rawDateString.Replace("|", " ");
             rawDateString = rawDateString.Replace("—", " ");
@@ -103,17 +103,17 @@ namespace TextMediaParser.Common.Helpers
 
             if (DateTime.TryParseExact(rawDateString, "dd.MM HH:mm",  CultureInfo.InvariantCulture, 0, out tempRes))
             {
-                return (true, new DateTime(DateTime.Now.Year, tempRes.Month, 
+                return (true, new DateTime(htmlCollectionDate.Year, tempRes.Month, 
                     tempRes.Day, tempRes.Hour, tempRes.Minute, 0));
             }                
             else if(DateTime.TryParseExact(rawDateString, "dd.MM HH:mm:ss", CultureInfo.InvariantCulture, 0, out tempRes))
             {
-                return (true, new DateTime(DateTime.Now.Year, tempRes.Month,
+                return (true, new DateTime(htmlCollectionDate.Year, tempRes.Month,
                     tempRes.Day, tempRes.Hour, tempRes.Minute, tempRes.Second));
             }
             else if (DateTime.TryParseExact(rawDateString, "dd.MM", CultureInfo.InvariantCulture, 0, out tempRes))
             {
-                return (true, new DateTime(DateTime.Now.Year, tempRes.Month,
+                return (true, new DateTime(htmlCollectionDate.Year, tempRes.Month,
                     tempRes.Day, tempRes.Hour, tempRes.Minute, tempRes.Second));
             }
 
