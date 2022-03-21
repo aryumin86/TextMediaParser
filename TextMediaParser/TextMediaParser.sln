@@ -9,10 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextMediaParser.Common.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextMediaParser.ConsoleTests", "TextMediaParser.ConsoleTests\TextMediaParser.ConsoleTests.csproj", "{6E8D45D5-D1AA-4955-A013-171DDB7215C4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextMediaParser.WebApp", "TextMediaParser.WebApp\TextMediaParser.WebApp.csproj", "{9E599006-2108-4AB6-9997-77B92066CEEA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextMediaParser.DesktopTests", "TextMediaParser.DesktopTests\TextMediaParser.DesktopTests.csproj", "{BF663530-C87B-488C-933D-C830AAF07ABB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,14 +27,6 @@ Global
 		{6E8D45D5-D1AA-4955-A013-171DDB7215C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E8D45D5-D1AA-4955-A013-171DDB7215C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E8D45D5-D1AA-4955-A013-171DDB7215C4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9E599006-2108-4AB6-9997-77B92066CEEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E599006-2108-4AB6-9997-77B92066CEEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9E599006-2108-4AB6-9997-77B92066CEEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9E599006-2108-4AB6-9997-77B92066CEEA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF663530-C87B-488C-933D-C830AAF07ABB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF663530-C87B-488C-933D-C830AAF07ABB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF663530-C87B-488C-933D-C830AAF07ABB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF663530-C87B-488C-933D-C830AAF07ABB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

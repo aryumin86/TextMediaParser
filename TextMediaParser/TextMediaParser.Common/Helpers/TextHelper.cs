@@ -74,9 +74,9 @@ namespace TextMediaParser.Common.Helpers
                 StringComparison.InvariantCultureIgnoreCase);
             rawDateString = rawDateString.Replace("Сегодня", string.Empty,
                 StringComparison.InvariantCultureIgnoreCase);
-            rawDateString = rawDateString.Replace("Вчера в", $"{yesterday.Day}.{yesterday.Month}",
+            rawDateString = rawDateString.Replace("Вчера в", $"{(yesterday.Day < 10 ? "0" + yesterday.Day : yesterday.Day)}.{(yesterday.Month < 10 ? "0" + yesterday.Month : yesterday.Month)}.{yesterday.Year}",
                 StringComparison.InvariantCultureIgnoreCase);
-            rawDateString = rawDateString.Replace("Вчера", $"{yesterday.Day}.{yesterday.Month}",
+            rawDateString = rawDateString.Replace("Вчера", $"{(yesterday.Day < 10 ? "0" + yesterday.Day : yesterday.Day)}.{(yesterday.Month < 10 ? "0" + yesterday.Month : yesterday.Month)}.{yesterday.Year}",
                 StringComparison.InvariantCultureIgnoreCase);
             rawDateString = rawDateString.Replace(" в ", " ");
 
