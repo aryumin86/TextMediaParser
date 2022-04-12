@@ -2,6 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <FileVersion>1.0.4.0</FileVersion>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <Authors>Alexey Ryumin</Authors>
+    <PackageId>aryumin.TextMediaParser</PackageId>
+    <Version>1.0.4</Version>
+    <Description>Identifies texts at articles html-s</Description>
+    <PackageProjectUrl>http://content-analysis.ru/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/aryumin86/TextMediaParser</RepositoryUrl>
+    <PackageTags>parser text media</PackageTags>
+    <PackageReleaseNotes>fixed date parsing for ru-Rus culture</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
