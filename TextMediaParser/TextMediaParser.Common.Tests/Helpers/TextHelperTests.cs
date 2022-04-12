@@ -69,6 +69,12 @@ namespace TextMediaParser.Common.Tests.Helpers
         {
             yield return new object[]
             {
+                "8 апреля 2022, 00:01",
+                new DateTime(2022, 4, 8, 0, 1, 0),
+                DateTime.Now
+            };
+            yield return new object[]
+            {
                 "12 декабря, 00:40",
                 new DateTime(DateTime.Now.Year, 12, 12, 00, 40, 0),
                 DateTime.Now
@@ -131,7 +137,7 @@ namespace TextMediaParser.Common.Tests.Helpers
             {
                 "Вчера в 21:57",
                 new DateTime(DateTime.Now.AddDays(-1).Year, DateTime.Now.AddDays(-1).Month,
-                    DateTime.Now.AddDays(-1).Day, 21, 57, 0), 
+                    DateTime.Now.AddDays(-1).Day, 21, 57, 0),
                 DateTime.Now
             };
             yield return new object[]

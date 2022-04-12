@@ -52,6 +52,7 @@ namespace TextMediaParser.Common.Helpers
                 "dd MMMM HH:mm:ss", "dd MMM HH:mm:ss",
                 "d MMMM HH:mm", "d MMMM HH:mm:ss",
                 "d MMMM HH:mm:ss", "d MMM HH:mm:ss",
+                "dd MMM HH:mm", "dd MMMM HH:mm"
             };
             var invariantCultureFormats = new[]
             {
@@ -90,6 +91,12 @@ namespace TextMediaParser.Common.Helpers
                 {
                     return (true, tempRes);
                 }
+            }
+
+            if (DateTime.TryParse(rawDateString, 
+                CultureInfo.GetCultureInfo("ru-RU"), DateTimeStyles.None, out tempRes))
+            {
+                return (true, tempRes);
             }
 
             foreach (var format in invariantCultureFormats)
